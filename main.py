@@ -18,7 +18,7 @@ BLACK = (0, 0, 0)
 red = (200, 0, 0)
 blue = (0, 0, 200)
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((WIDTH, HEIGHT+80))
 pygame.display.set_caption("Tic-Tac-Toe")
 
 
@@ -33,6 +33,7 @@ class TicTacToe():
         self.circle_width = 15 
     
     def draw_board(self):
+        
         for i in range(2):
             x = (i+1)*WIDTH // 3
             y = (i+1)*HEIGHT // 3
@@ -53,19 +54,23 @@ class TicTacToe():
                 else:
                     pygame.draw.circle(self.screen, blue, (x,y), self.circle_radius, width=self.circle_width)
         
+        f = pygame.font.SysFont('Comic Sans MS', 40)    
         if self.winner != -1:
-            f = pygame.font.SysFont('Comic Sans MS', 50)    
-            winning_colour = "blue"
+            winning_colour = "Blue"
             if self.winner == 2:
                 text_surface = f.render("Tie!", False, BLACK)    
             else:
-                if self.winner == 1: winning_colour = "red"
-                text_surface = f.render(winning_colour + " has won!", False, BLACK)
-                
-            text_rect = text_surface.get_rect()
-            text_rect.center = (WIDTH//2, HEIGHT//2)
-            pygame.draw.rect(self.screen, BACKGROUND_COLOUR, text_rect)
-            self.screen.blit(text_surface, text_rect)           
+                if self.winner == 1: winning_colour = "Red"
+                text_surface = f.render(winning_colour + " has won!", False, BLACK)            
+        else:
+            turn_text = "Blue's"
+            if self.turn == 1: turn_text = "Red's"
+            text_surface = f.render(turn_text + " turn", False, BLACK)  
+
+        text_rect = text_surface.get_rect()
+        text_rect.center = (WIDTH//2,HEIGHT + 40)
+        pygame.draw.rect(self.screen, BACKGROUND_COLOUR, text_rect)
+        self.screen.blit(text_surface, text_rect)      
 
     def check_win(self, board):
         turn = 0
@@ -103,6 +108,7 @@ class TicTacToe():
             self.board[row][col] = self.turn
             self.winner = self.check_win(self.board)
             self.turn = 1 - self.turn
+            my_AI.get_best_move()
     
    
 TTT = TicTacToe(screen)
@@ -116,7 +122,6 @@ while running:
         if event.type == pygame.MOUSEBUTTONUP:
             if (event.button == 1):
                 TTT.check_click(pygame.mouse.get_pos())
-                my_AI.get_best_move()
                                        
     screen.fill(BACKGROUND_COLOUR) 
     TTT.draw_board()
